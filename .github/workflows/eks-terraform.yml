@@ -1,0 +1,53 @@
+name: EKS-Terraform
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: ["*"]
+
+jobs:
+    clone-different-repo:
+        name: Clone Different Repo
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout this repository
+              uses: actions/checkout@v4
+              with:
+                repository: 'Rameshwara9640/Terraform_EKS'
+                ref: 'main'
+        
+            - name: Install Terraform
+              uses: hashicorp/setup-terraform@v2
+              with:
+                terraform_version: 1.6.0
+
+            - name: Authenticate AWS CLI
+              uses: aws-actions/configure-aws-credentials@v2
+              with:
+                aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                aws-region: us-east-1
+
+            - name: Initilalize Terraform
+              run: terraform init
+
+            - name: format Terraform
+              run: terraform fmt -check
+
+            - name: Validate Terraform
+              run: terraform validate
+
+            - name: Run Checkov on Terraform
+              uses: bridgecrewio/checkov-action@v12
+              with:
+                directory: ./
+                framework: terraform
+                soft_fail: false
+                skip_check: CKV_AWS_39,CKV_AWS_58  # Public EKS endpoint (intentional for dev)
+                output_format: cli
+
+            - name: preview Terraform plan
+              run: terraform plan
+
+            - name: Apply Terraform plan
+              run: terraform apply -auto-approve
