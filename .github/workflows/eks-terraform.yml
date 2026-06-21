@@ -6,16 +6,13 @@ on:
     branches: ["*"]
 
 jobs:
-    clone-different-repo:
-        name: Clone Different Repo
+    EKS-Provision:
+        name: eks-provision
         runs-on: ubuntu-latest
         steps:
-            - name: Checkout this repository
+            - name: Checkout this terraform
               uses: actions/checkout@v4
-              with:
-                repository: 'Rameshwara9640/Terraform_EKS'
-                ref: 'main'
-        
+              
             - name: Install Terraform
               uses: hashicorp/setup-terraform@v2
               with:
