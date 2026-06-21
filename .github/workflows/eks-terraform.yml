@@ -37,7 +37,7 @@ jobs:
             - name: Run Checkov on Terraform
               uses: bridgecrewio/checkov-action@master
               with:
-                directory: ./
+                directory: terraform/
                 framework: terraform
                 soft_fail: false
                 # Public EKS endpoint (intentional for dev)
